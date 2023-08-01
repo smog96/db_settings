@@ -12,7 +12,9 @@ class _SettingsSchema:
     def schema(self, optional: bool = False) -> BaseModel:
         if self._generated is False:
             raise ValueError(
-                "Use SettingsSchema.gen(`SyncSettingsBase / AsyncSettingsBase`) before include FastAPI router."
+                "Use SettingsSchema"
+                ".gen(`SyncSettingsBase / AsyncSettingsBase`) "
+                "before include FastAPI router."
             )
         if optional:
             return self._schema_opt

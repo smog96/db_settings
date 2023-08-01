@@ -10,7 +10,6 @@ from db_settings.log import logger
 
 try:
     import psycopg
-    import psycopg_pool
 except ImportError:
     logger.exception("Psycopg 3 module important to use postgresql.")
     raise sys.exit(1)

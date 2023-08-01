@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "db-settings"
-version = "0.1.0"
+version = "0.1.1"
 description = "Python project settings to database storage"
 authors = ["Burdasov Ilya <smog965@gmail.com>"]
 readme = "README.md"

@@ -23,9 +23,14 @@ INSERT_OR_UPDATE = Template(
 )
 
 SELECT_ONE = Template(
-    """SELECT value FROM ${table_name} WHERE val_key = '${key}' AND service_name = '${service_name}';"""
+    """SELECT value 
+    FROM ${table_name} 
+    WHERE val_key = '${key}' 
+    AND service_name = '${service_name}';"""
 )
 
 SELECT_ALL = Template(
-    """SELECT val_key as key, value FROM ${table_name} WHERE service_name = '${service_name}';"""
+    """SELECT val_key as key, value 
+    FROM ${table_name} 
+    WHERE service_name = '${service_name}';"""
 )
