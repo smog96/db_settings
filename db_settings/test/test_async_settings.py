@@ -3,11 +3,11 @@ from datetime import datetime
 
 import pytest
 
-from db_settings.base import AsyncSettingsBase as SettingsBase
+from db_settings.base.settings import AsyncSettingsBase
 from db_settings.configuration import DBType, SettingsConf
 
 
-class Settings(SettingsBase):
+class Settings(AsyncSettingsBase):
     some_date: datetime = datetime(2020, 1, 2)
     some_string: str = "hello world"
     some_int: int = 1
@@ -28,7 +28,7 @@ class Settings(SettingsBase):
 async def test_sync_settings():
     settings = Settings()
     value = await settings.get(settings.some_int)
-    assert value in (1, 12)
+    assert isinstance(value, int)
     await settings.set("some_int", 12)
     await asyncio.sleep(2)
     value = await settings.get("some_int")

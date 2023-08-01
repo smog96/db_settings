@@ -1,2 +1,1 @@
-from .asyn import AsyncSettingsBase
-from .sync import SettingsBase
+from .base import SettingsBase

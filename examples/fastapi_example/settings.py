@@ -1,11 +1,10 @@
-import time
 from datetime import datetime
 
-from db_settings.base import SettingsBase
+from db_settings.base.settings import AsyncSettingsBase
 from db_settings.configuration import DBType, SettingsConf
 
 
-class Settings(SettingsBase):
+class Settings(AsyncSettingsBase):
     some_date: datetime = datetime(2020, 1, 2)
     some_string: str = "hello world"
     some_int: int = 1
@@ -17,17 +16,6 @@ class Settings(SettingsBase):
         db_port=5432,
         db_user="postgres",
         db_password="postgres",
-        db_sync_type="sync",
+        db_sync_type="async",
         db_name="settings_lib",
     )
-
-
-def run():
-    settings = Settings()
-    print(settings.some_int)
-    settings.some_int = 12
-    time.sleep(2)
-    print(settings.some_int)
-
-
-run()

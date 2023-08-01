@@ -1,13 +1,12 @@
 from datetime import datetime
 from typing import Any
 
-from db_settings import SettingsConf
-from db_settings.configuration import DRIVER_MAPPING
+from db_settings.configuration import DRIVER_MAPPING, SettingsConf
 from db_settings.db_drivers.base import TBaseDBDriver
 from db_settings.time.converts import to_str, to_time
 
 
-class _SettingsBase:
+class SettingsBase:
     __slots__ = ["config", "_values", "_ttls", "_initialized", "_db_cls"]
 
     __allowed_types__ = (
@@ -43,6 +42,12 @@ class _SettingsBase:
             if key not in self.__allowed_types__:
                 raise ValueError(f"Type {key} not supported yet.")
 
+    def all(self) -> dict:
+        res = {}
+        for key in self.__annotations__.keys():
+            res[key] = getattr(self, key)
+        return res
+
     def _init(self):
         exists_values = self._db_cls.init()
 
@@ -68,6 +73,7 @@ class _SettingsBase:
             "set",
             "get",
             "root_validator",
+            "all",
         ) or __name.startswith("_"):
             return super().__setattr__(__name, __value)
         return self._update_value(__name, __value)
@@ -94,6 +100,7 @@ class _SettingsBase:
                 "set",
                 "get",
                 "root_validator",
+                "all",
             )
             or __name.startswith("_")
             or self._initialized is False
@@ -107,9 +114,9 @@ class _SettingsBase:
         type_ = self.__annotations__.get(name)
         if type_ is None or isinstance(value, type_):
             return value
-        if type_ is datetime:
+        elif type_ is datetime:
             value = to_time(value, fmt=self.config.datetime_fmt)
-        if type_ in [list, tuple, set]:
+        elif type_ in [list, tuple, set]:
             value = ast.literal_eval(value)
         elif isinstance(type(value), type_) is False:
             value = type_(value)

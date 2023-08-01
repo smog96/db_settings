@@ -1,11 +1,11 @@
 import time
 from datetime import datetime
 
-from db_settings.base import SettingsBase
+from db_settings.base.settings import SyncSettings
 from db_settings.configuration import DBType, SettingsConf
 
 
-class Settings(SettingsBase):
+class Settings(SyncSettings):
     some_date: datetime = datetime(2020, 1, 2)
     some_string: str = "hello world"
     some_int: int = 1
