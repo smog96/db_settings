@@ -7,14 +7,17 @@ from db_settings.base.base import SettingsBase
 class AsyncSettingsBase(SettingsBase):
     async def get(self, item: Any):
         ttl = self._ttls.get(item, None)
-        if (
-            ttl
-            and self.config
-            and (datetime.now() - ttl).seconds > self.config.timeout
-        ):
-            value = await self._fetch_value(key=item)
-        else:
-            value = self._values.get(item)
+        try:
+            if (
+                ttl
+                and self.config
+                and (datetime.now() - ttl).seconds > self.config.timeout
+            ):
+                value = await self._fetch_value(key=item)
+                return self._value_to_type(name=item, value=value)
+        except TypeError:
+            pass
+        value = self._values.get(item)
         return self._value_to_type(name=item, value=value)
 
     async def all(self) -> dict:
