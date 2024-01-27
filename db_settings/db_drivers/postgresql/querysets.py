@@ -34,3 +34,6 @@ SELECT_ALL = Template(
     FROM ${table_name} 
     WHERE service_name = '${service_name}';"""
 )
+
+RECOVERY_STATE = Template("""select pg_is_in_recovery();""")
+DEFAULT_TRANSACTION_RO = Template("""show default_transaction_read_only;""")

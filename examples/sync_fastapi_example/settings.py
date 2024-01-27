@@ -1,7 +1,4 @@
-import asyncio
 from datetime import datetime
-
-import pytest
 
 from db_settings.base import SettingsBase
 from db_settings.configuration import DBType, SettingsConf
@@ -14,22 +11,11 @@ class Settings(SettingsBase):
     some_tuple: tuple = (1, 2, 3)
     config = SettingsConf(
         timeout=1,
-        db_type=DBType.postgresql,
+        db_type=DBType.pg_psycopg,
         db_host="localhost",
         db_port=5432,
         db_user="postgres",
         db_password="postgres",
-        db_sync_type="async",
-        db_name="settings_lib",
+        db_sync_type="sync",
+        db_name="postgres",
     )
-
-
-@pytest.mark.asyncio
-async def test_sync_settings():
-    settings = Settings()
-    value = await settings.aget("some_int")
-    assert isinstance(value, int)
-    await settings.aset("some_int", 12)
-    await asyncio.sleep(2)
-    value = await settings.aget("some_int")
-    assert value == 12

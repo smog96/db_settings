@@ -1,18 +1,21 @@
 from datetime import timedelta
 from typing import Literal
 
-from db_settings.db_drivers import PostgresqlDriver, RedisDriver
+from db_settings.db_drivers import AsyncPgDriver, PsycopgDriver, RedisDriver
 from db_settings.db_drivers.datas import DbData
 from db_settings.time.defaults import STDF
 
 DRIVER_MAPPING = {
-    "postgresql": PostgresqlDriver,
+    "postgresql_psycopg": PsycopgDriver,
+    "postgresql_asyncpg": AsyncPgDriver,
     "redis": RedisDriver,
 }
 
 
 class _DBType:
-    postgresql: Literal["postgresql"] = "postgresql"
+    postgresql: Literal["postgresql"] = "postgresql_psycopg"
+    pg_psycopg: Literal["pg_psycopg"] = "postgresql_psycopg"
+    pg_asyncpg: Literal["pg_asyncpg"] = "postgresql_asyncpg"
     redis: Literal["redis"] = "redis"
 
     def __getattribute__(self, __name: str) -> str:

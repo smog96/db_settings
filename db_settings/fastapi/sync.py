@@ -10,7 +10,7 @@ def gen_router(router: APIRouter | None = None) -> APIRouter:
         if (
             len(fastapi.DbSettingsAPIConfig.api_prefix) > 1
             and fastapi.DbSettingsAPIConfig.api_prefix[-1] == "/"
-        ) or fastapi.DbSettingsAPIConfig.api_prefix == "/":
+        ):
             postfix = "db_settings"
         else:
             postfix = "/db_settings"
@@ -21,15 +21,15 @@ def gen_router(router: APIRouter | None = None) -> APIRouter:
             **fastapi.DbSettingsAPIConfig.route_args
         )
 
-    async def get_all(force: bool = Query(default=False)):
-        return await DbSettingsAPIConfig.settings_module.aall(force=force)
+    def get_all(force: bool = Query(default=False)):
+        return DbSettingsAPIConfig.settings_module.all(force=force)
 
-    async def update_settings(
+    def update_settings(
         data: SettingsSchema.schema(optional=True) = Body(),
     ):
         data = data.model_dump(exclude_none=True)
         for k, v in data.items():
-            await DbSettingsAPIConfig.settings_module.aset(item=k, value=v)
+            setattr(DbSettingsAPIConfig.settings_module, k, v)
         return DefaultResponse
 
     router.add_api_route(

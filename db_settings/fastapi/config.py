@@ -1,6 +1,8 @@
 from dataclasses import dataclass, field
 from typing import Any, Callable, Coroutine
 
+from fastapi import Depends
+
 from db_settings.fastapi.views import TBaseSettings
 
 
@@ -8,6 +10,7 @@ from db_settings.fastapi.views import TBaseSettings
 class _DbSettingsAPIConfig:
     settings_module: TBaseSettings = None
     api_prefix: str = "/"
+    tags: list[str] = field(default_factory=lambda: ["DB settings"])
     dependencies: list = field(default_factory=lambda: [])
     route_args: dict = field(default_factory=lambda: {})
 
@@ -15,7 +18,11 @@ class _DbSettingsAPIConfig:
 DbSettingsAPIConfig = _DbSettingsAPIConfig()
 
 
-def default_allow_all() -> bool:
+def _test_():
+    return 10
+
+
+def default_allow_all(dep: int = Depends(_test_)) -> bool:
     return True
 
 

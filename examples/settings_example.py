@@ -9,7 +9,19 @@ class Settings(SyncSettings):
     some_date: datetime = datetime(2020, 1, 2)
     some_string: str = "hello world"
     some_int: int = 1
-    some_tuple: tuple = (1, 2, 3)
+    some_tuple: set = (
+        15169,
+        13335,
+        16509,
+        396982,
+        31624,
+        22612,
+        8560,
+        14618,
+        47846,
+        12389,
+    )
+    some_bool: bool = True
     config = SettingsConf(
         timeout=1,
         db_type=DBType.postgresql,
@@ -24,10 +36,25 @@ class Settings(SyncSettings):
 
 def run():
     settings = Settings()
-    print(settings.some_int)
-    settings.some_int = 12
+    # print(type(settings.some_bool), settings.some_bool)
+    print(type(settings.some_tuple), settings.some_tuple)
+    settings.some_tuple = (
+        15169,
+        13335,
+        16509,
+        396982,
+        31624,
+        22612,
+        8560,
+        14618,
+        47846,
+        12389,
+    )
+    settings.some_bool = not settings.some_bool
     time.sleep(2)
-    print(settings.some_int)
+    # print(type(settings.some_bool), settings.some_bool)
+    print(settings.all())
+    print(type(settings.some_tuple), settings.some_tuple)
 
 
 run()

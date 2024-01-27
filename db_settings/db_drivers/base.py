@@ -7,15 +7,14 @@ from db_settings.db_drivers.datas import DbData
 class BaseDriver:
     def __init__(self, is_async: bool, db: DbData):
         self._is_async = is_async
-        self.execute = self._aexecute if is_async else self._execute
         self._db = db
 
     @abstractmethod
-    def _execute(self, query: str):
+    def _execute(self, query: str, commit: bool = True):
         raise NotImplementedError
 
     @abstractmethod
-    async def _aexecute(self, query: str):
+    async def _aexecute(self, query: str, commit: bool = True):
         raise NotImplementedError
 
     @abstractmethod

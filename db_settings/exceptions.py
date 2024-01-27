@@ -4,3 +4,7 @@ class NoSyncSetter(Exception):
 
 class TimeOutValue(Exception):
     pass
+
+
+class DBError(Exception):
+    pass

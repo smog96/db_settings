@@ -1,13 +1,23 @@
 from datetime import datetime
 from typing import Any
 
+from asyncer import syncify
+
 from db_settings.configuration import DRIVER_MAPPING, SettingsConf
 from db_settings.db_drivers.base import TBaseDBDriver
+from db_settings.exceptions import DBError
 from db_settings.time.converts import to_str, to_time
 
 
 class SettingsBase:
-    __slots__ = ["config", "_values", "_ttls", "_initialized", "_db_cls"]
+    __slots__ = [
+        "config",
+        "_values",
+        "_ttls",
+        "_initialized",
+        "_db_cls",
+        "_is_async",
+    ]
 
     __allowed_types__ = (
         list,
@@ -16,6 +26,8 @@ class SettingsBase:
         int,
         str,
         datetime,
+        bool,
+        float,
     )
 
     def __init__(self) -> None:
@@ -32,6 +44,7 @@ class SettingsBase:
             is_async=self.config.db_sync_type,
             db=self.config.db,
         )
+        self._is_async: bool = self.config.db_sync_type
 
         self.root_validator()
         self._init()
@@ -42,10 +55,49 @@ class SettingsBase:
             if key not in self.__allowed_types__:
                 raise ValueError(f"Type {key} not supported yet.")
 
-    def all(self) -> dict:
+    async def aall(self, force: bool = False) -> dict:
+        vals = self.__annotations__.keys()
+        res = {}
+        for k in vals:
+            res[k] = await self.aget(k, force=force)
+        return res
+
+    async def aget(self, item: Any, force: bool = False):
+        ttl = self._ttls.get(item, None)
+        try:
+            if force or (
+                ttl
+                and self.config
+                and (datetime.utcnow() - ttl).seconds > self.config.timeout
+            ):
+                value = await self._afetch_value(key=item)
+                self._ttls.setdefault(item, datetime.utcnow())
+                return self._value_to_type(name=item, value=value)
+        except (TypeError, DBError):
+            pass
+        value = self._values.get(item)
+        return self._value_to_type(name=item, value=value)
+
+    async def aset(self, item: Any, value: Any):
+        await self._aupdate_value(key=item, value=value)
+
+    async def _aupdate_value(self, key: str, value: Any):
+        await self._db_cls.aset(key=key, value=value)
+
+    async def _afetch_value(self, key: str):
+        return await self._db_cls.afetch(key=key)
+
+    def all(self, force: bool = False) -> dict:
         res = {}
         for key in self.__annotations__.keys():
-            res[key] = getattr(self, key)
+            if force:
+                try:
+                    value = self.get(key)
+                except (TypeError, IndexError, ValueError):
+                    value = getattr(self, key)
+            else:
+                value = getattr(self, key)
+            res[key] = value
         return res
 
     def _init(self):
@@ -55,7 +107,7 @@ class SettingsBase:
             key: exists_values.get(key, getattr(self, key, None))
             for key in self.__annotations__.keys()
         }
-        _n = datetime.now()
+        _n = datetime.utcnow()
         self._ttls = {k: _n for k in self.__annotations__.keys()}
 
     def _update_value(self, key: str, value: Any):
@@ -63,17 +115,22 @@ class SettingsBase:
             value = to_str(value, fmt=self.config.datetime_fmt)
         self._db_cls.set(key=key, value=value)
 
-    def _fetch_value(self, key: str) -> Any:
-        value = self._db_cls.fetch(key=key)[0]
+    def get(self, key: str) -> Any:
+        value = self._db_cls.fetch(key=key)
+        value = value[0]
+        self._ttls.setdefault(key, datetime.utcnow())
         return self._value_to_type(key, value)
 
     def __setattr__(self, __name: str, __value: Any) -> None:
         if __name in (
             "config",
+            "aset",
+            "aget",
             "set",
             "get",
             "root_validator",
             "all",
+            "aall",
         ) or __name.startswith("_"):
             return super().__setattr__(__name, __value)
         return self._update_value(__name, __value)
@@ -84,11 +141,10 @@ class SettingsBase:
             if (
                 ttl
                 and self.config
-                and (datetime.now() - ttl).seconds > self.config.timeout
+                and (datetime.utcnow() - ttl).seconds > self.config.timeout
             ):
-                value = self._fetch_value(key=item)
-                return value
-        except TypeError:
+                return self.get(key=item)
+        except (TypeError, DBError):
             pass
         return self._value_to_type(item, self._values.get(item))
 
@@ -97,10 +153,13 @@ class SettingsBase:
             __name
             in (
                 "config",
+                "aset",
+                "aget",
                 "set",
                 "get",
                 "root_validator",
                 "all",
+                "aall",
             )
             or __name.startswith("_")
             or self._initialized is False
@@ -116,8 +175,13 @@ class SettingsBase:
             return value
         elif type_ is datetime:
             value = to_time(value, fmt=self.config.datetime_fmt)
-        elif type_ in [list, tuple, set]:
+        elif type_ in (list, tuple, set) and isinstance(value, str):
             value = ast.literal_eval(value)
+        elif type_ in [bool]:
+            if value in (1, 1.0, "true", "True", "y", "yes"):
+                value = True
+            else:
+                value = False
         elif isinstance(type(value), type_) is False:
             value = type_(value)
         else:

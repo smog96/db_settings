@@ -1,5 +1,6 @@
-from typing import TypeVar, NoReturn, Optional
-from pydantic import create_model, BaseModel
+from typing import NoReturn, Optional, TypeVar
+
+from pydantic import BaseModel, create_model
 
 from db_settings.base import SettingsBase
 
@@ -26,8 +27,8 @@ class _SettingsSchema:
             for k, v in input_settings.__annotations__.items()
         }
         data = {k: (v, ...) for k, v in input_settings.__annotations__.items()}
-        self._schema = create_model("Settings", **data)
-        self._schema_opt = create_model("Settings", **data_opt)
+        self._schema = create_model("DBSettings", **data)
+        self._schema_opt = create_model("DBSettings_opt", **data_opt)
         self._generated = True
 
     def __init__(self):

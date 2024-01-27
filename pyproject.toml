@@ -1,28 +1,41 @@
 [tool.poetry]
 name = "db-settings"
-version = "0.1.1"
+version = "0.0.6"
 description = "Python project settings to database storage"
 authors = ["Burdasov Ilya <smog965@gmail.com>"]
 readme = "README.md"
-packages = [{include = "db_settings"}]
+packages = [{ include = "db_settings" }]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-asyncer = "^0.0.2"
-psycopg-binary = "^3.1.9"
-psycopg-pool = "^3.1.7"
+asyncer = "^0.0.3"
+psycopg-binary = "^3.1.17"
+psycopg-pool = "^3.1.17"
 varname = "^0.11.2"
+asyncpg = "^0.29.0"
+fastapi = "^0.109.0"
+pydantic = "^2.5.3"
 
 
 [tool.poetry.group.dev.dependencies]
-isort = "^5.12.0"
-black = "^23.7.0"
-ruff = "^0.0.280"
+isort = "^5.13.2"
+black = "^24.1.0"
+ruff = "^0.1.14"
 pytest = "^7.4.0"
 pytest-asyncio = "^0.21.1"
-uvicorn = "^0.23.2"
-fastapi = "^0.100.1"
-pydantic = "^2.1.1"
+uvicorn = "^0.27.0"
+
+
+[[tool.poetry.source]]
+name = "wb_nexus"
+url = "https://nexus.wildberries.ru/repository/antiddos/"
+priority = "explicit"
+
+
+[[tool.poetry.source]]
+name = "antiddos"
+url = "http://antiddos.dp.wb.ru:8080"
+priority = "explicit"
 
 
 [build-system]
@@ -55,32 +68,77 @@ select = ["E", "F"]
 ignore = []
 
 # Allow autofix for all enabled rules (when `--fix`) is provided.
-fixable = ["A", "B", "C", "D", "E", "F", "G", "I", "N", "Q", "S", "T", "W", "ANN", "ARG", "BLE", "COM", "DJ", "DTZ", "EM", "ERA", "EXE", "FBT", "ICN", "INP", "ISC", "NPY", "PD", "PGH", "PIE", "PL", "PT", "PTH", "PYI", "RET", "RSE", "RUF", "SIM", "SLF", "TCH", "TID", "TRY", "UP", "YTT"]
+fixable = [
+  "A",
+  "B",
+  "C",
+  "D",
+  "E",
+  "F",
+  "G",
+  "I",
+  "N",
+  "Q",
+  "S",
+  "T",
+  "W",
+  "ANN",
+  "ARG",
+  "BLE",
+  "COM",
+  "DJ",
+  "DTZ",
+  "EM",
+  "ERA",
+  "EXE",
+  "FBT",
+  "ICN",
+  "INP",
+  "ISC",
+  "NPY",
+  "PD",
+  "PGH",
+  "PIE",
+  "PL",
+  "PT",
+  "PTH",
+  "PYI",
+  "RET",
+  "RSE",
+  "RUF",
+  "SIM",
+  "SLF",
+  "TCH",
+  "TID",
+  "TRY",
+  "UP",
+  "YTT",
+]
 unfixable = []
 
 # Exclude a variety of commonly ignored directories.
 exclude = [
-    ".bzr",
-    ".direnv",
-    ".eggs",
-    ".git",
-    ".git-rewrite",
-    ".hg",
-    ".mypy_cache",
-    ".nox",
-    ".pants.d",
-    ".pytype",
-    ".ruff_cache",
-    ".svn",
-    ".tox",
-    ".venv",
-    "__pypackages__",
-    "_build",
-    "buck-out",
-    "build",
-    "dist",
-    "node_modules",
-    "venv",
+  ".bzr",
+  ".direnv",
+  ".eggs",
+  ".git",
+  ".git-rewrite",
+  ".hg",
+  ".mypy_cache",
+  ".nox",
+  ".pants.d",
+  ".pytype",
+  ".ruff_cache",
+  ".svn",
+  ".tox",
+  ".venv",
+  "__pypackages__",
+  "_build",
+  "buck-out",
+  "build",
+  "dist",
+  "node_modules",
+  "venv",
 ]
 
 # Same as Black.
