@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "db-settings"
-version = "0.0.6"
+version = "0.0.7"
 description = "Python project settings to database storage"
 authors = ["Burdasov Ilya <smog965@gmail.com>"]
 readme = "README.md"
@@ -8,7 +8,7 @@ packages = [{ include = "db_settings" }]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-asyncer = "^0.0.3"
+asyncer = "^0.0.4"
 psycopg-binary = "^3.1.17"
 psycopg-pool = "^3.1.17"
 varname = "^0.11.2"
